@@ -7,10 +7,12 @@
 	import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
 	import Check from '$lib/components/icons/Check.svelte';
 	import Search from '$lib/components/icons/Search.svelte';
+	import Star from '$lib/components/icons/Star.svelte';
+	
 
 	import { cancelOllamaRequest, deleteModel, getOllamaVersion, pullModel } from '$lib/apis/ollama';
 
-	import { user, MODEL_DOWNLOAD_POOL, models } from '$lib/stores';
+	import { user, MODEL_DOWNLOAD_POOL, models, starredModels } from '$lib/stores';
 	import { toast } from 'svelte-sonner';
 	import { capitalizeFirstLetter, getModels, splitStream } from '$lib/utils';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
@@ -173,6 +175,14 @@
 			toast.success(`${model} download has been canceled`);
 		}
 	};
+
+	function toggleStar(value) {
+        starredModels.update(currentStars => {
+            const newState = { ...currentStars };
+            newState[value] = !newState[value];
+            return newState;
+        });
+    }
 </script>
 
 <Select.Root
@@ -287,6 +297,12 @@
 								<Check />
 							</div>
 						{/if}
+						<button
+							class="ml-auto"
+							on:click={() => toggleStar(item.value)}
+						>
+							<Star filled={$starredModels[item.value] || false} />
+						</button>
 					</Select.Item>
 				{:else}
 					<div>
